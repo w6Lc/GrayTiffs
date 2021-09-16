@@ -1,10 +1,13 @@
-function save_tiff(img, img_file)
+function save_tiff(img, img_file)   
+% 此tiff文件，不支持imwrite的append模式
 %% INPUT
 if nargin == 0
     img = imread('rice.png');
     img = repmat(img, [1,1,100]);
     img_file = 'Test/test.tif';
     debug = 1;
+else
+    debug = 0;
 end
 %%
 tf_tag.Photometric = Tiff.Photometric.MinIsBlack;
@@ -37,18 +40,5 @@ if debug
         imread(img_file, i);
     end
     disp(['读取时间: ', num2str(toc), 's']);
-    
-    % png
-%     tic
-%     for i = 1:100
-%         imwrite(img(:,:,i), 'tmp.png');
-%     end
-%     toc
-%     tic
-%     for i = 1:100
-%         imread('tmp.png');
-%     end
-%     toc
 end
-
 end

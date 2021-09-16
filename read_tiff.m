@@ -1,20 +1,16 @@
 function img = read_tiff(img_file)
+%% INPUT
+if nargin == 0
+    img_file = 'Test/test.tif';
+end
+%%
+tiff_info = imfinfo(img_file);
+deep = length(tiff_info);
+high = tiff_info(1).Height;
+wide = tiff_info(1).Width;
+img = zeros(high, wide, deep);
 
-info = imfinfo(img_file);
-t = Tiff('out.tif','w');
-
-imwrite(double(data), '2.tiff');
-
-
-tagstruct.Photometric	= Tiff.Photometric.MinIsBlack;
-tagstruct.Compression 	= Tiff.Compression.None;
-tagstruct.BitsPerSample	= 32; 
-tagstruct.SampleFormat	= Tiff.SampleFormat.IEEEFP;   % 数据类型为浮点数IEEEFP
-tagstruct.ImageLength	= size(data,1);
-tagstruct.ImageWidth	= size(data,2);
-tagstruct.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
-t.setTag(tagstruct)
-
-t.write(single(data));
-t.close();
+for i = 1:deep
+    img(:,:,i) = imread(img_file, i);
+end
 end
