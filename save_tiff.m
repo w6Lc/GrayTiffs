@@ -29,6 +29,7 @@ tf_tag.ImageWidth = size(img, 2);
 tf_tag.PlanarConfiguration = Tiff.PlanarConfiguration.Chunky;
 %% write tiff
 if debug, tic; end
+
 tf = Tiff(img_file,'w');
 for i = 1 : size(img, 3)
     if i > 1, tf.writeDirectory; end  % 换页后，需重新定义每一页的tag
@@ -36,6 +37,7 @@ for i = 1 : size(img, 3)
     tf.write(single(img(:,:,i)));
 end
 tf.close();
+
 if debug, disp(['写入时间: ', num2str(toc), 's']); end
 
 % 测试时间

@@ -9,6 +9,7 @@ function img = read_tiff(img_file)
 if nargin == 0
     img_file = 'Test/test.tif';
 end
+
 %%
 tiff_info = imfinfo(img_file);
 deep = length(tiff_info);
