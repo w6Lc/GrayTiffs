@@ -4,7 +4,6 @@ function img = read_tiff(img_file)
 %       img_file (str): tiff of 2d or 3d
 %   Returns:
 %       img (num): 2d or 3d mat
-%   不要直接运行本文件，否则返回值 img 直接输出在控制台
 %% INPUT
 if nargin == 0
     img_file = 'Test/test.tif';
