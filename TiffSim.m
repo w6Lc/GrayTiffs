@@ -24,13 +24,13 @@ classdef TiffSim < handle
 
   methods
     function obj = TiffSim(file, mode)
-      % mode:  None('r+') | 'w' 
-      if ~exist('mode', 'var'), mode = []; end
+      % mode:  None('r+') | 'w' | 'r+'
+      if ~exist('mode', 'var'), mode = 'r+'; end
       
       if strcmp(mode, 'w') || ~exist(file, 'file')
         obj.tf = Tiff(file, 'w');
         obj.nums = 0;
-      else
+      elseif strcmp(mode, 'r+')
         obj.tf = Tiff(file, 'r+');
         obj.nums = length(imfinfo(file));
       end
@@ -148,8 +148,8 @@ classdef TiffSim < handle
         if obj.tell()==1, obj.seek(1); obj.tf.writeDirectory(); end
       else
         tmp = obj.tf.currentDirectory();
-        obj.tf.rewriteDirectory();
-        if obj.tell() - 1 ~= obj.len()
+        obj.tf.rewriteDirectory();    % 运行之后必须重定位
+        if tmp < obj.len()
           obj.seek(tmp+1);
         else
           obj.seek(tmp);
