@@ -1,11 +1,35 @@
-# GrayTiffs
+# TiffSim
 
-读取或存储 tiff 堆栈（uint8,uint16,float32），之后可以配合相关软件查看。
+`TiffSim` 基于 matlab 的 `Tiff` 库进行封装简化，避免读写 Tiff 堆栈的复杂调用，也支持写入自定义的 Tiff-Tag.
 
-![image-20210916231054197](.img/image-20210916231054197.png)
+可替代方案： `imread` ，但是不支持浮点数格式，定制化功能较弱。
+
+## 功能
+
+* `TiffSim`：创建读写 Tiff 堆栈数据流，可寻址、读写
+* `read_tiff`：一次性读取 Tiff 堆栈数据，或者读取 size
+* `save_tiff`：一次性写入 Tiff 堆栈数据，支持自定义 `Tiff` 库的相关 tag
 
 ## 使用
 
-* 调用 save_tiff 存储三维矩阵为 tiff 堆栈（uint8,uint16,float32）
-* 调用 read_tiff 可读取 tiff 堆栈 （任意格式）
-* 调用 GrayTiffs 创建读取或者写入tiff流
+```matlab
+% TiffSim 创建读写流
+tf = TiffSim('1.tif', 'w');
+tf.write(imread('rice.png')); 			% write
+tf.write(imread('rice.png'), 'float');	% write float
+tf.write(imread('rice.png'), [], struct('Compression', Tiff.Compression.LZW)); % with tag
+tf.seek(1); tf.write(imgaussfilt(imread('rice.png')));  	 % overwrite a slice
+tf.seek(1); tf.read(); tf.read();  tf.read();				 % read tiff
+tf.eof()    		% file end, read over
+tf.close();
+imfinfo('1.tif')  	% can be opened by ImageJ using vitual stack
+
+% save_tiff 一次写入 Tiff 堆栈数据
+save_tiff(imread('rice.png'), '1.tif');
+save_tiff(imread('rice.png'), '1.tif', 'float');
+
+% read_tiff 一次读取 Tiff 堆栈数据
+img = read_tiff('1.tif');
+[high, wide, deep] = read_tiff('1.tif', 'size');
+```
+

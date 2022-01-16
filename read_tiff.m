@@ -1,24 +1,46 @@
-function img = read_tiff(img_file)
-%	Read tiff of 2d or 3d
+function varargout = read_tiff(file, mode)
+%READTIFF Read tiff3d once to img using TiffSim.
 %   Args:
-%       img_file (str): tiff of 2d or 3d
+%     file:   '<file>'
+%     mode:   None | 'size'
+%   
 %   Returns:
-%       img (num): 2d or 3d mat
-%% INPUT
-if nargin == 0
-    img_file = 'Test/test.tif';
+%     when only_size==None:    img
+%     when only_size=='size':  [high, wide, deep]
+% 
+%   Example:
+%   >>> img = read_tiff('1.tif');
+%   >>> [high, wide, deep] = read_tiff('1.tif', 'size');
+
+%% 
+if nargin == 0, debug = 1;
+  file = '1.tif';
+%   mode = 'size';
 end
+if ~exist('debug', 'var'), debug = []; end
+if ~exist('mode', 'var'), mode = []; end
 
 %%
-tiff_info = imfinfo(img_file);
-deep = length(tiff_info);
-high = tiff_info(1).Height;
-wide = tiff_info(1).Width;
-img = zeros(high, wide, deep);
-
-for i = 1:deep
-    img(:,:,i) = imread(img_file, i);
+info = imfinfo(file);
+[high, wide, deep] = deal(info(1).Height, info(1).Width, length(info));
+if strcmp(mode, 'size')
+  varargout = {high, wide, deep};
+  return
 end
 
-if nargin == 0, figure, imshow(img(:,:,1), []); end
+tf = TiffSim(file);
+tmp = tf.read();
+img = zeros(high, wide, deep, class(tmp));
+img(:,:,1) = tmp;
+
+if debug, tic; end
+for i = 2:deep
+  img(:,:,i) = tf.read();
+end
+tf.close();
+varargout = {img};
+if debug
+  disp(['读取时间: ', num2str(toc), 's']);
+  figure, imshow(img(:,:,1), []); 
+end
 end
